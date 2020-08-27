@@ -1,0 +1,78 @@
+-- Команды по доработке таблиц.
+
+SHOW TABLES;
+
+SELECT * FROM users LIMIT 10;
+UPDATE users SET created_at = (SELECT created_at FROM messages WHERE users.id = messages.id),
+                 updated_at = (SELECT updated_at FROM messages WHERE users.id = messages.id);
+                 
+UPDATE users SET updated_at = NOW() WHERE updated_at < created_at;
+
+DESC profiles;
+SELECT * FROM profiles LIMIT 10;
+UPDATE profiles SET created_at = (SELECT created_at FROM users WHERE user_id = users.id),
+                    updated_at = (SELECT updated_at FROM users WHERE user_id = users.id);
+              
+SELECT * FROM messages LIMIT 10;
+UPDATE messages SET created_at = (SELECT created_at FROM users WHERE messages.id = users.id),
+                    updated_at = (SELECT updated_at FROM users WHERE messages.id = users.id);
+                   
+SELECT * FROM media_types;
+TRUNCATE media_types;
+INSERT INTO media_types (name) VALUES
+  ('photo'),
+  ('video'),
+  ('audio')
+;
+UPDATE media_types SET created_at = (SELECT created_at FROM users WHERE media_types.id = users.id),
+                       updated_at = (SELECT updated_at FROM users WHERE media_types.id = users.id);
+                      
+SELECT * FROM media LIMIT 10;
+ALTER TABLE media RENAME COLUMN filename TO filepath;
+UPDATE media SET media_type_id = FLOOR(1 + RAND() * 3);
+CREATE TEMPORARY TABLE extensions (name VARCHAR(10));
+INSERT INTO extensions VALUES ('jpeg'), ('avi'), ('mpeg'), ('png');
+SELECT * FROM extensions;
+UPDATE media SET filepath = CONCAT(
+  filepath,
+  (SELECT last_name FROM users ORDER BY RAND() LIMIT 1),
+  '.',
+  (SELECT name FROM extensions ORDER BY RAND() LIMIT 1)
+);
+UPDATE media SET size = FLOOR(10000 + (RAND() * 1000000)) WHERE size < 1000;
+UPDATE media SET metadata = CONCAT('{"owner":"', 
+  (SELECT CONCAT(first_name, ' ', last_name) FROM users WHERE id = user_id),
+  '"}');
+
+UPDATE media SET created_at = (SELECT created_at FROM users WHERE media.id = users.id),
+                 updated_at = (SELECT updated_at FROM users WHERE media.id = users.id);
+                
+ALTER TABLE media MODIFY COLUMN metadata JSON;
+DESC media;
+
+SELECT * FROM friendship LIMIT 10;
+
+SELECT * FROM friendship_statuses;
+TRUNCATE friendship_statuses;
+INSERT INTO friendship_statuses (name) VALUES
+  ('Requested'),
+  ('Confirmed'),
+  ('Rejected')
+ ;
+UPDATE friendship_statuses SET created_at = (SELECT created_at FROM users WHERE friendship_statuses.id = users.id),
+                               updated_at = (SELECT updated_at FROM users WHERE friendship_statuses.id = users.id);
+UPDATE friendship SET status_id = FLOOR(1 + RAND() * 3);
+UPDATE friendship SET created_at = (SELECT created_at FROM users WHERE user_id = users.id),
+                      updated_at = (SELECT updated_at FROM users WHERE user_id = users.id);
+      
+UPDATE friendship SET requested_at = (SELECT created_at FROM users WHERE user_id = users.id),
+                      confirmed_at = (SELECT updated_at FROM users WHERE user_id = users.id);
+UPDATE friendship SET updated_at = (SELECT updated_at FROM users WHERE user_id = users.id);
+
+SELECT * FROM communities;
+DELETE FROM communities WHERE id > 20;
+UPDATE communities SET created_at = (SELECT created_at FROM users WHERE communities.id = users.id),
+                       updated_at = (SELECT updated_at FROM users WHERE communities.id= users.id);
+
+SELECT * FROM communities_users;
+UPDATE communities_users SET community_id = FLOOR(1 + RAND() * 20);

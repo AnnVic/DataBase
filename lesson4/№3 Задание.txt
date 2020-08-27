@@ -1,0 +1,17 @@
+ --Реализация таблиц лайков и постов.
+
+CREATE TABLE articles (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор поста", 
+  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на отправителя поста",
+  title VARCHAR(150) NOT NULL COMMENT,
+  body TEXT NOT NULL COMMENT "Текст поста",
+  created_at DATETIME DEFAULT NOW() COMMENT "Время создания поста",
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления поста"
+) COMMENT "Посты";
+
+CREATE TABLE likes (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор лайка",
+  article_id INT UNSIGNED NOT NULL COMMENT "Идентификатор поста", 
+  user_id INT UNSIGNED NOT NULL COMMENT "Ссылка на отправителя лайка",
+  created_at DATETIME DEFAULT NOW() COMMENT "Время создания лайка",
+) COMMENT "Лайки";
