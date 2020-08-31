@@ -1,0 +1,50 @@
+CREATE DATABASE shop;
+USE shop;
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) COMMENT 'Имя покупателя',
+  birthday_at DATE COMMENT 'Дата рождения',
+  created_at DATETIME,
+  updated_at DATETIME
+) COMMENT = 'Покупатели';
+INSERT INTO users (name, birthday_at, created_at, updated_at) VALUES
+  ('Геннадий', '1990-10-05', '1990-10-05 10:40', '1990-10-05 10:40'),
+  ('Наталья', '1984-11-12', '1990-10-05 10:40', '1990-10-05 10:40'),
+  ('Александр', '1985-05-20', NULL, NULL),
+  ('Сергей', '1988-02-14', NULL, NULL),
+  ('Иван', '1998-01-12', NULL, NULL),
+  ('Мария', '1992-08-29', NULL, NULL);
+  UPDATE users SET created_at = NOW(), updated_at = NOW();
+ SELECT * FROM users;
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) COMMENT 'Имя покупателя',
+  birthday_at DATE COMMENT 'Дата рождения',
+  created_at VARCHAR(255),
+  updated_at VARCHAR(255)
+) COMMENT = 'Покупатели';
+INSERT INTO users (name, birthday_at, created_at, updated_at) VALUES
+  ('Геннадий', '1990-10-05', '2020-03-17 10:40', '2020-03-17 10:40'),
+  ('Наталья', '1984-11-12', '2019-10-09 13:40', '2019-10-09 13:40'),
+  ('Александр', '1985-05-20', '2006-08-07 17:10', '2006-08-07 17:10');
+ SELECT * FROM users;
+ALTER TABLE users CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE users CHANGE updated_at updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+DESCRIBE users;
+CREATE TABLE storehouses_products (
+  id SERIAL PRIMARY KEY,
+  storehouse_id INT UNSIGNED,
+  product_id INT UNSIGNED,
+  value INT UNSIGNED COMMENT 'Запас товарной позиции на складе',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'Запасы на складе';
+INSERT INTO storehouses_products (storehouse_id, product_id, value) 
+VALUES (1, 23, 0), (1, 45, 2500), (1, 34, 0), (1, 15, 30), (1, 56, 500), (1, 80, 1);
+SELECT * FROM storehouses_products;
+SELECT * FROM storehouses_products ORDER BY IF(value > 0, 1, 2), value;
+
+SELECT AVG(TIMESTAMPDIFF(YEAR, birthday_at, NOW())) AS age FROM users;
+SELECT DATE_FORMAT(DATE(CONCAT_WS('-', YEAR(NOW()), MONTH(birthday_at), DAY(birthday_at))), '%W') AS day, COUNT(*) AS number 
+FROM users GROUP BY day ORDER BY number;
